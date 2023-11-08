@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predição de AVC</title>
+  </head>
+  <body>
+    <form id="form">
+      <div>
+        <label for="p1">Pergunta 1: Qual o gênero da pessoa?</label>
+        <select name="p1">
+          <option value="1">Masculino</option>
+          <option value="2">Feminino</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p2">Pergunta 2: Qual a Idade da pessoa?</label>
+        <input type="text" name="p2" />
+      </div>
+
+      <div>
+        <label for="p3">Pergunta 3: A pessoa tem hipertensão?</label>
+        <select name="p3">
+          <option value="1">Sim</option>
+          <option value="0">Não</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p4"
+          >Pergunta 4: A pessoa tem doenças cardíacas além da
+          hipertensão?</label
+        >
+        <select name="p4">
+          <option value="1">Sim</option>
+          <option value="0">Não</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p5">Pergunta 5: A pessoa foi/é casada?</label>
+        <select name="p5">
+          <option value="1">Sim</option>
+          <option value="0">Não</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p6"
+          >Pergunta 6: Qual o tipo de emprego que a pessoa tem?</label
+        >
+        <select name="p6">
+          <option value="2">Setor privado</option>
+          <option value="3">Autônoma</option>
+          <option value="4">Pessoa menor de idade</option>
+          <option value="0">Funcionária pública</option>
+          <option value="1">Nunca trabalhou</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p7"
+          >Pergunta 7: A pessoa mora na zona rural ou na zona urbana?</label
+        >
+        <select name="p7">
+          <option value="0">Zona rural</option>
+          <option value="1">Zona urbana</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="p8"
+          >Pergunta 8: Qual a glicemia média da pessoa (mg/dl)?</label
+        >
+        <input type="text" name="p8" />
+      </div>
+
+      <div>
+        <label for="p9">Pergunta 9: Qual o IMC da pessoa?</label>
+        <input type="text" name="p9" />
+      </div>
+
+      <div>
+        <label for="p10">Pergunta 10: A pessoa fuma?</label>
+        <select name="p10">
+          <option value="3">Fuma</option>
+          <option value="1">Já foi fumante</option>
+          <option value="2">Nunca fumou</option>
+          <option value="0">Informação desconhecida</option>
+        </select>
+      </div>
+
+      <div>
+        <button type="button" onclick="submitForm()">Enviar respostas</button>
+      </div>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+      function submitForm() {
+        var form = document.getElementById("form");
+        var answers = [];
+
+        for (var i = 1; i <= 10; i++) {
+          var questionName = "p" + i;
+          var answer = form.elements[questionName].value;
+          answers.push(answer);
+        }
+
+        fetch("http://localhost:8000/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ input: answers }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            var pred = "";
+            if (data.prediction[0] === 1) {
+              pred = "Chances significativas de ter um AVC!!!";
+            } else {
+              pred = "Chances remotas de ter um AVC";
+            }
+            // Handle the response data
+            document.getElementById("response").textContent = pred;
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>
